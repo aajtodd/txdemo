@@ -19,9 +19,10 @@ class ChatServerProtocol(Protocol):
         self.state = self.WAITING_FOR_USERNAME
 
     def connectionLost(self, reason):
-        # write back out to everyone
         for client in self.factory.users:
             client.transport.write("{0} has left the chat.".format(self.username))
+
+        self.factory.leave_chatroom(self)
 
     def dataReceived(self, data):
         if self.state == self.WAITING_FOR_USERNAME:
